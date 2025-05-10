@@ -195,6 +195,12 @@ if(CONFIG_USE_AUDIO_CODEC_ENCODE_OPUS OR CONFIG_USE_AUDIO_CODEC_DECODE_OPUS)
                             "audio_codecs/es8388_audio_codec.cc")
 endif()
 
+if(CONFIG_USE_EMOTION_REMOTE)
+    list(APPEND SOURCES "remote/emotion_remote.cc"
+                        "remote/gapRemote.cc")
+    list(APPEND INCLUDE_DIRS "remote")
+endif()
+
 idf_component_register(SRCS ${SOURCES}
                     EMBED_FILES ${LANG_SOUNDS} ${COMMON_SOUNDS}
                     INCLUDE_DIRS ${INCLUDE_DIRS}

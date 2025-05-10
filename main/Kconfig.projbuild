@@ -235,6 +235,13 @@ config USE_REALTIME_CHAT
     help
         需要 ESP32 S3 与 AEC 开启，因为性能不够，不建议和微信聊天界面风格同时开启
 
+config USE_EMOTION_REMOTE
+    bool "启用远程表情控制(doit_ai_two_eye眼部表情)"
+    default y
+    depends on !IDF_TARGET_ESP32C2
+    help
+        可用于控制 doit_ai_two_eye 做出对应的表情
+        
 config USE_AUDIO_CODEC_ENCODE_OPUS
     depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD
     bool "use audio codec encode opus"

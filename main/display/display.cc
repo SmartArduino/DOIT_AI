@@ -11,6 +11,9 @@
 #include "audio_codec.h"
 #include "settings.h"
 #include "assets/lang_config.h"
+#ifdef CONFIG_USE_EMOTION_REMOTE
+#include "emotion_remote.h"
+#endif
 
 #define TAG "Display"
 
@@ -194,6 +197,11 @@ void Display::Update() {
 
 
 void Display::SetEmotion(const char* emotion) {
+
+#ifdef CONFIG_USE_EMOTION_REMOTE
+    EmotionRemote::GetInstance().SetEmotion(emotion);
+#endif
+
     struct Emotion {
         const char* icon;
         const char* text;
