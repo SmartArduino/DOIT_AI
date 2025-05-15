@@ -159,6 +159,8 @@ elseif(CONFIG_BOARD_TYPE_DOIT_AI_01_KIT)
     set(BOARD_TYPE "doit-ai-01-kit")
 elseif(CONFIG_BOARD_TYPE_DOIT_AI_01_KIT_LCD)
     set(BOARD_TYPE "doit-ai-01-kit-lcd")
+elseif(CONFIG_BOARD_TYPE_DOIT_AI_02_KIT_LCD)
+    set(BOARD_TYPE "doit-ai-02-kit-lcd")
 elseif(CONFIG_BOARD_TYPE_DOIT_AI_SPEAKER)
     set(BOARD_TYPE "doit-ai-speaker")
 endif()
@@ -202,7 +204,7 @@ if(CONFIG_IDF_TARGET_ESP32)
                              )
 endif()
 
-if(CONFIG_USE_AUDIO_CODEC_ENCODE_OPUS OR CONFIG_USE_AUDIO_CODEC_DECODE_OPUS)
+if(CONFIG_USE_AUDIO_CODEC_ENCODE_OPUS OR CONFIG_USE_AUDIO_CODEC_DECODE_OPUS OR CONFIG_BOARD_TYPE_DOIT_AI_02_KIT_LCD)
     list(APPEND SOURCES "audio_codecs/vb6824_audio_codec.cc")
     list(REMOVE_ITEM SOURCES "audio_codecs/box_audio_codec.cc"
                             "audio_codecs/no_audio_codec.cc"

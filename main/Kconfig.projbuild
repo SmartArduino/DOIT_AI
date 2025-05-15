@@ -152,6 +152,8 @@ choice BOARD_TYPE
         bool "Doit-AI-01-Kit"
     config BOARD_TYPE_DOIT_AI_01_KIT_LCD
         bool "Doit-AI-01-Kit-lcd"
+    config BOARD_TYPE_DOIT_AI_02_KIT_LCD
+        bool "Doit-AI-02-Kit-lcd"
     config BOARD_TYPE_DOIT_AI_SPEAKER
         bool "Doit-AI-SPEAKER"
 endchoice
@@ -276,12 +278,12 @@ config USE_EMOTION_REMOTE
         可用于控制 doit_ai_two_eye 做出对应的表情
         
 config USE_AUDIO_CODEC_ENCODE_OPUS
-    depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD
+    depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD || BOARD_TYPE_DOIT_AI_02_KIT_LCD
     bool "use audio codec encode opus"
     default y
 
 config USE_AUDIO_CODEC_DECODE_OPUS
-    depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD
+    depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD || BOARD_TYPE_DOIT_AI_02_KIT_LCD
     bool "use audio codec decode opus"
     default n
 
