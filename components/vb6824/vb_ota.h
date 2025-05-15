@@ -31,6 +31,7 @@ void jl_ondata(uint8_t *buf, uint16_t len);
 int jl_set_ota_url(const char* url);
 int jl_ota_start(jl_ota_event_t evt_cb);
 int jl_ota_set_code(char  *code);
+void jl_set_uart_port(uint8_t port);
 
 
 #ifdef __cplusplus

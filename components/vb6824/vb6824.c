@@ -623,6 +623,10 @@ bool vb6824_is_support_ota(){
 void vb6824_init(gpio_num_t tx, gpio_num_t rx){
     __uart_init(tx, rx);
 
+#if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
+    jl_set_uart_port(UART_NUM);
+#endif
+
 #if defined(CONFIG_VB6824_TYPE_OPUS_16K_20MS)
     g_rx_ringbuffer = xRingbufferCreate(RECV_BUF_LENGTH, RINGBUF_TYPE_NOSPLIT);
     g_tx_ringbuffer = xRingbufferCreate(SEND_BUF_LENGTH, RINGBUF_TYPE_NOSPLIT);

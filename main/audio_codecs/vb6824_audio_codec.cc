@@ -64,7 +64,7 @@ std::string VbAduioCodec::GenDevCode() {
         mbedtls_md5(reinterpret_cast<const unsigned char*>(mac.c_str()), mac.size(), md5_result);
         uint16_t value =  (((md5_result[14]) << 8) | md5_result[15]) & 0xFFFF; 
         std::ostringstream oss;
-        oss << value % 10000;
+        oss << std::setw(4) << std::setfill('0') << (value % 10000);
         last_four_digits = oss.str();
         ESP_LOGW(TAG, "last_four_digits: %s", last_four_digits.c_str());
     }
@@ -113,11 +113,11 @@ int VbAduioCodec::OtaStart(uint8_t mode) {
 bool VbAduioCodec::InOtaMode(bool reShowIfInOta) {
 #if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
     auto &app = Application::GetInstance();
-    std::string code = GenDevCode();
     const std::string ip = WifiStation::GetInstance().GetIpAddress();
     if (jl_ws_is_start() == 1) {
         if (reShowIfInOta)
         {
+            std::string code = GenDevCode();
             app.ShowOtaInfo(code, ip);
         }
         return true;
