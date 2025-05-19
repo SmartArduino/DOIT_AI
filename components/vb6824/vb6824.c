@@ -288,6 +288,10 @@ void __send_task(void *arg) {
             uint8_t *item = (uint8_t *)xRingbufferReceiveUpTo(g_tx_ringbuffer, &item_size, portMAX_DELAY, AUDIO_SEND_CHENK_LEN);
 #endif
             if (item != NULL) {
+                if(g_output_enabled == false){
+                    vRingbufferReturnItem(g_tx_ringbuffer, (void *)item);
+                    goto clear_rbuffer;
+                }
                 TickType_t now_time = xTaskGetTickCount();
                 if((now_time - last_time) >= pdMS_TO_TICKS(AUDIO_SEND_CHENK_MS)){
                     last_time = xTaskGetTickCount();
@@ -298,6 +302,23 @@ void __send_task(void *arg) {
                 }
                 vRingbufferReturnItem(g_tx_ringbuffer, (void *)item);
                 vTaskDelayUntil(&last_time, pdMS_TO_TICKS(AUDIO_SEND_CHENK_MS));
+clear_rbuffer:
+                if(g_output_enabled == false){
+                    while(1){
+                        size_t item_size = 0;
+            #if defined(CONFIG_VB6824_TYPE_OPUS_16K_20MS)
+                        uint8_t *item = (uint8_t *)xRingbufferReceive(g_tx_ringbuffer, &item_size, 0);
+            #else
+                        uint8_t *item = (uint8_t *)xRingbufferReceiveUpTo(g_tx_ringbuffer, &item_size, 0, AUDIO_SEND_CHENK_LEN);
+            #endif
+                        if (item != NULL) {
+                            vRingbufferReturnItem(g_tx_ringbuffer, (void *)item);
+                        }else{
+                            break;
+                        }
+                    }
+                    continue;
+                }
             }
         }else{
             vTaskDelay(10);
@@ -471,21 +492,21 @@ void vb6824_audio_enable_output(bool enable){
 
     g_output_enabled = enable;
 
-    if(g_output_enabled == false){
-        while(1){
-            size_t item_size = 0;
-#if defined(CONFIG_VB6824_TYPE_OPUS_16K_20MS)
-            uint8_t *item = (uint8_t *)xRingbufferReceive(g_tx_ringbuffer, &item_size, 0);
-#else
-            uint8_t *item = (uint8_t *)xRingbufferReceiveUpTo(g_tx_ringbuffer, &item_size, 0, AUDIO_SEND_CHENK_LEN);
-#endif
-            if (item != NULL) {
-                vRingbufferReturnItem(g_rx_ringbuffer, (void *)item);
-            }else{
-                break;
-            }
-        }
-    }
+//     if(g_output_enabled == false){
+//         while(1){
+//             size_t item_size = 0;
+// #if defined(CONFIG_VB6824_TYPE_OPUS_16K_20MS)
+//             uint8_t *item = (uint8_t *)xRingbufferReceive(g_tx_ringbuffer, &item_size, 0);
+// #else
+//             uint8_t *item = (uint8_t *)xRingbufferReceiveUpTo(g_tx_ringbuffer, &item_size, 0, AUDIO_SEND_CHENK_LEN);
+// #endif
+//             if (item != NULL) {
+//                 vRingbufferReturnItem(g_tx_ringbuffer, (void *)item);
+//             }else{
+//                 break;
+//             }
+//         }
+//     }
 }
 
 void vb6824_register_voice_command_cb(vb_voice_command_cb_t cb, void *arg){
