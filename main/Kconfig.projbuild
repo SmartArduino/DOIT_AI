@@ -279,15 +279,22 @@ config USE_EMOTION_REMOTE
         
 config USE_AUDIO_CODEC_ENCODE_OPUS
     depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD || BOARD_TYPE_DOIT_AI_02_KIT_LCD
+    select USE_CUSTOM_TASK_STACK_SIZE
     bool "use audio codec encode opus"
     default y
 
 config USE_AUDIO_CODEC_DECODE_OPUS
     depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD || BOARD_TYPE_DOIT_AI_02_KIT_LCD
+    select USE_CUSTOM_TASK_STACK_SIZE
     bool "use audio codec decode opus"
     default n
 
+config USE_CUSTOM_TASK_STACK_SIZE
+    bool "use custom task stack size"
+    default n
+
 config TACKGROUND_TASK_STACK_SIZE
+    depends on USE_CUSTOM_TASK_STACK_SIZE
     int "background task stack size"
     default 2048 if ((IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3) && (USE_AUDIO_CODEC_ENCODE_OPUS && USE_AUDIO_CODEC_DECODE_OPUS))
     default 8960 if ((IDF_TARGET_ESP32C2 || IDF_TARGET_ESP32C3) && (USE_AUDIO_CODEC_ENCODE_OPUS))
@@ -295,6 +302,7 @@ config TACKGROUND_TASK_STACK_SIZE
     default 32768
 
 config AUDIO_LOOP_TASK_STACK_SIZE
+    depends on USE_CUSTOM_TASK_STACK_SIZE
     int "audio_loop task stack size"
     default 2048 if IDF_TARGET_ESP32C2
     default 8192

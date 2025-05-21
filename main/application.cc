@@ -28,6 +28,14 @@
 #error "audoio_processor or wake_word_detect need opus encoder"
 #endif
 
+#ifndef CONFIG_TACKGROUND_TASK_STACK_SIZE
+#define CONFIG_TACKGROUND_TASK_STACK_SIZE   (4096*8)
+#endif
+
+#ifndef CONFIG_AUDIO_LOOP_TASK_STACK_SIZE
+#define CONFIG_AUDIO_LOOP_TASK_STACK_SIZE   (4096*2)
+#endif
+
 static const char* const STATE_STRINGS[] = {
     "unknown",
     "starting",
