@@ -53,15 +53,25 @@
     or
     idf.py set-target esp32c2
     idf.py menuconfig
-    // Xiaozhi Assistant ---> Connection Type ---> Websocket    
     // Xiaozhi Assistant ---> Board Type ---> Doit-AI-01-Kit    
     idf.py build
     ```
 
 ### 下载说明
-
+可使用[配套的下载器](https://item.taobao.com/item.htm?id=903237380382&skuId=5947883431059&spm=a1z10.5-c-s.w4002-21590874298.11.126342baEAq94S)或普通的TTL(USB转串口)
 #### 接线指导
 
+##### 下载器
+| AI-01开发板     | 下载器 |
+| --------- | -------- |
+| TX        | RX       |
+| RX        | TX       |
+| IO9       | BOOT     |
+| EN        | EN       |
+| 5V        | 5V       |
+| GND       | GND      |
+
+##### 普通TTL
 | AI-01开发板     | TTL(USB转串口) |
 | --------- | -------- |
 | TX        | RX       |
@@ -70,15 +80,20 @@
 | GND       | GND      |
 
 ## 下载步骤
-1. AI-01开发板和TTL都断开电脑的连接
-2. 先按住AI-01开发板按键，再把TTL接入电脑，(AI-01开发板不需要接)
-- 网页下载    
-    3. 浏览器访问https://xiaozhi.doit.am, 并选择四博智联小智AI-01智能体    
-    4. 点击烧录，进入烧录界面     
-    5. 点击连接，选择弹窗的设备，点击连接    
-    6. 点击烧录，等待烧录完成    
-- IDF下载    
-    3. idf.py flash   
+- 准备
+    - 下载器
+        1. 下载器接入电脑即可
+    - 普通TTL
+        1. AI-01开发板和TTL都断开电脑的连接
+        2. 先按住AI-01开发板按键，再把TTL接入电脑，AI-01开发板USB口不要接
+- 下载
+    - 网页下载    
+        1. 浏览器访问https://xiaozhi.doit.am, 并选择四博智联小智AI-01智能体    
+        2. 点击烧录，进入烧录界面     
+        3. 点击连接，选择弹窗的设备，点击连接    
+        4. 点击烧录，等待烧录完成    
+    - IDF下载    
+        1. idf.py flash   
 
 ## 硬件部分
 
