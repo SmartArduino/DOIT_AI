@@ -18,7 +18,7 @@ endif()
 idf_component_register(SRCS "${srcs}"
                             INCLUDE_DIRS "${incs}"
                             EMBED_TXTFILES "${assets}"
-                            REQUIRES driver esp_http_server json esp_timer)
+                            REQUIRES driver esp_wifi esp_http_client esp_http_server json esp_timer)
 
 
 

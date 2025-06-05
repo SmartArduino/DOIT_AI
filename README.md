@@ -7,9 +7,7 @@
 
 👉 [视频介绍【bilibili】](https://www.bilibili.com/video/BV1icXPYVEMN/)
 
-👉 [ESP32+SenseVoice+Qwen72B打造你的AI聊天伴侣！【bilibili】](https://www.bilibili.com/video/BV11msTenEH3/)
-
-👉 [给小智装上 DeepSeek 的聪明大脑【bilibili】](https://www.bilibili.com/video/BV1GQP6eNEFG/)
+👉 [人类：给 AI 装摄像头 vs AI：当场发现主人三天没洗头【bilibili】](https://www.bilibili.com/video/BV1bpjgzKEhd/)
 
 👉 [AI-01模组使用手册](docs/AI-01_使用手册.pdf)
 
@@ -32,21 +30,20 @@
 已实现功能
 
 - Wi-Fi / ML307 Cat.1 4G
-- BOOT 键唤醒和打断，支持点击和长按两种触发方式
 - 离线语音唤醒 [ESP-SR](https://github.com/espressif/esp-sr)
-- 流式语音对话（WebSocket 或 UDP 协议）
-- 支持国语、粤语、英语、日语、韩语 5 种语言识别 [SenseVoice](https://github.com/FunAudioLLM/SenseVoice)
-- 声纹识别，识别是谁在喊 AI 的名字 [3D Speaker](https://github.com/modelscope/3D-Speaker)
-- 大模型 TTS（火山引擎 或 CosyVoice）
-- 大模型 LLM（Qwen, DeepSeek, Doubao）
-- 可配置的提示词和音色（自定义角色）
-- 短期记忆，每轮对话后自我总结
-- OLED / LCD 显示屏，显示信号强弱或对话内容
-- 支持 LCD 显示图片表情
-- 支持多语言（中文、英文）
+- 支持两种通信协议（[Websocket](docs/websocket.md) 或 MQTT+UDP）
+- 采用 OPUS 音频编解码
+- 基于流式 ASR + LLM + TTS 架构的语音交互
+- 声纹识别，识别当前说话人的身份 [3D Speaker](https://github.com/modelscope/3D-Speaker)
+- OLED / LCD 显示屏，支持表情显示
+- 电量显示与电源管理
+- 支持多语言（中文、英文、日文）
+- 支持 ESP32-C3、ESP32-S3、ESP32-P4 芯片平台
+- 通过设备端 MCP 实现设备控制（音量、灯光、电机、GPIO 等）
+- 通过云端 MCP 扩展大模型能力（智能家居控制、PC桌面操作、知识搜索、邮件收发等）
 
 ## 软件部分
-* ESP-IDF需要在5.3以上，推荐版本为5.3，参考[官方指南](https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32c2/get-started/index.html)
+* ESP-IDF需要在5.4以上，推荐版本为5.4，参考[官方指南](https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32c2/get-started/index.html)
 * 编译
     ```
     idf.py @main/boards/doit-ai-01-kit/boards.cfg build    
@@ -110,6 +107,7 @@
 | 你好小智            |                  |
 | 小艾小艾(需升级支持) | Hey Alice(需升级支持) |
 
+👉 [新手烧录固件教程](https://ccnphfhqs21z.feishu.cn/wiki/Zpz4wXBtdimBrLk25WdcXzxcnNS)
 
 ### 机器人
 

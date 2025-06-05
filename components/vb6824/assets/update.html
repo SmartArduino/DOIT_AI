@@ -302,7 +302,7 @@
                     ws.onopen = function() {
                         console.log('WebSocket连接成功');
                         loadingOverlay.style.display = 'none';
-                        progressInfo.innerText = '开始升级';
+                        progressInfo.innerText = '正在升级,请稍等...';
                         document.getElementById('progress-container').style.display = 'block';
                         ws.send(JSON.stringify({ command: 'startDownload' }));
                     };

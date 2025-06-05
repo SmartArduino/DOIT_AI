@@ -13,6 +13,8 @@
 #include <esp_http_server.h>
 #include "mdns.h"
 #include "cJSON.h"
+#include <esp_http_client.h>
+#include <esp_wifi.h>
  
 static const char *TAG = "ws_echo_server";
 extern const char index_html_start[] asm("_binary_update_html_start");
@@ -174,6 +176,9 @@ static esp_err_t _websocket_handler(httpd_req_t *req)
  
 // 提供主页的处理函数
 static esp_err_t index_get_handler(httpd_req_t *req) {
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*"); // 允许所有来源访问
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "POST, OPTIONS"); // 允许的请求方法
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type"); // 允许的请求头
     httpd_resp_send(req, index_html_start, strlen(index_html_start));
     return ESP_OK;
 }
@@ -286,6 +291,13 @@ static const httpd_uri_t main_index = {
     .user_ctx  = NULL
 };
 
+static const httpd_uri_t _options2_uri = {
+    .uri       = "/",
+    .method    = HTTP_OPTIONS,
+    .handler   = options_handler,
+    .user_ctx  = NULL
+};
+
 static const httpd_uri_t _check_uri = {
     .uri       = "/check",
     .method    = HTTP_GET,
@@ -324,6 +336,32 @@ int jl_ws_start(char *code)
     {
         return 1;
     }
+
+    // 获取设备的 IP 地址
+    esp_netif_ip_info_t ip_info;
+    esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_STA_DEF"), &ip_info);
+    char ip[16] = {0};
+    snprintf(ip, sizeof(ip), IPSTR, IP2STR(&ip_info.ip));
+
+    // 发送请求到 test.cn/set?code={code}&ip={ip}
+    char url[128] = {0};
+    snprintf(url, sizeof(url), "http://tui.doit.am/configIp/ip.php?action=set&id=%s&ip=%s", code, ip);
+
+    esp_http_client_config_t config1 = {
+        .url = url,
+        .method = HTTP_METHOD_GET,
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config1);
+    esp_err_t err = esp_http_client_perform(client);
+    if (err == ESP_OK) {
+        ESP_LOGI(TAG, "Request to %s succeeded", url);
+    } else {
+        ESP_LOGE(TAG, "Request to %s failed: %s", url, esp_err_to_name(err));
+    }
+    esp_http_client_cleanup(client);
+
+
+
     char host[12] = {0};
     sprintf(host, "aiota%s", code);
     // 初始化 mDNS
@@ -347,6 +385,7 @@ int jl_ws_start(char *code)
         httpd_register_uri_handler(s_server, &_check_uri);
         httpd_register_uri_handler(s_server, &_options_uri);
         httpd_register_uri_handler(s_server, &main_index);
+        httpd_register_uri_handler(s_server, &_options2_uri);
         httpd_register_uri_handler(s_server, &download_code);
         httpd_register_uri_handler(s_server, &uri_post);
         httpd_register_uri_handler(s_server, &_options1_uri);

@@ -8,6 +8,8 @@
 #include <vector>
 
 struct AudioStreamPacket {
+    int sample_rate = 0;
+    int frame_duration = 0;
     uint32_t timestamp = 0;
     std::vector<uint8_t> payload;
 };
@@ -63,14 +65,14 @@ public:
     virtual bool OpenAudioChannel() = 0;
     virtual void CloseAudioChannel() = 0;
     virtual bool IsAudioChannelOpened() const = 0;
-    virtual bool IsAudioChannelBusy() const;
-    virtual void SendAudio(const AudioStreamPacket& packet) = 0;
+    virtual bool SendAudio(const AudioStreamPacket& packet) = 0;
     virtual void SendWakeWordDetected(const std::string& wake_word);
     virtual void SendStartListening(ListeningMode mode);
     virtual void SendStopListening();
     virtual void SendAbortSpeaking(AbortReason reason);
     virtual void SendIotDescriptors(const std::string& descriptors);
     virtual void SendIotStates(const std::string& states);
+    virtual void SendMcpMessage(const std::string& message);
 
 protected:
     std::function<void(const cJSON* root)> on_incoming_json_;
@@ -82,7 +84,6 @@ protected:
     int server_sample_rate_ = 24000;
     int server_frame_duration_ = 60;
     bool error_occurred_ = false;
-    bool busy_sending_audio_ = false;
     std::string session_id_;
     std::chrono::time_point<std::chrono::steady_clock> last_incoming_time_;
 
