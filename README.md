@@ -46,7 +46,7 @@
 * ESP-IDF需要在5.4以上，推荐版本为5.4，参考[官方指南](https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32c2/get-started/index.html)
 * 编译
     ```
-    idf.py @main/boards/doit-ai-01-kit/boards.cfg build    
+    idf.py @main/boards/doit-ai-01-kit/build.cfg build    
     or
     idf.py set-target esp32c2
     idf.py menuconfig

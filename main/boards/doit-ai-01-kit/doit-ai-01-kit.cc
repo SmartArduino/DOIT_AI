@@ -11,15 +11,6 @@
 #include <esp_lcd_panel_vendor.h>
 #include <driver/spi_common.h>
 
-#if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
-#include "mbedtls/md5.h"
-#include <iomanip>
-#include <sstream>
-#include "system_info.h"
-#include "vb6824.h"
-#include "wifi_station.h"
-#endif
-
 #define TAG "CustomBoard"
 
 class CustomBoard : public WifiBoard {
