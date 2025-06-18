@@ -424,6 +424,12 @@ choice IOT_PROTOCOL
         bool "Xiaozhi IoT 1.0 (Deprecated)"
 endchoice
 
+config SPEAKING_FIRST_MUTE_TIME
+    int "Time to mute before speaking"
+    default 0
+    help
+        讲话之前静音时间
+
 config USE_AUDIO_CODEC_ENCODE_OPUS
     depends on BOARD_TYPE_DOIT_AI_01_KIT || BOARD_TYPE_DOIT_AI_01_KIT_LCD || BOARD_TYPE_DOIT_AI_02_KIT_LCD
     select USE_CUSTOM_TASK_STACK_SIZE
