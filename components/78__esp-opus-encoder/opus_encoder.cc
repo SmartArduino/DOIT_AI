@@ -37,6 +37,8 @@ void OpusEncoderWrapper::Encode(std::vector<int16_t>&& pcm, std::function<void(s
     if (in_buffer_.empty()) {
         in_buffer_ = std::move(pcm);
     } else {
+        /* ISSUE: https://github.com/78/esp-opus-encoder/issues/1 */
+        in_buffer_.reserve(in_buffer_.size() + pcm.size());
         in_buffer_.insert(in_buffer_.end(), pcm.begin(), pcm.end());
     }
 
@@ -85,6 +87,9 @@ void OpusEncoderWrapper::Config(int sample_rate, int channels, int duration_ms) 
     }
 
     opus_encoder_init(audio_enc_, sample_rate, channels, OPUS_APPLICATION_VOIP);
+	
+	sample_rate_ = sample_rate;
+    duration_ms_ = duration_ms;
 
     frame_size_ = sample_rate / 1000 * channels * duration_ms;
 }

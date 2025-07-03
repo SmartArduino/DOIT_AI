@@ -1,6 +1,6 @@
 dependencies:
-  78/esp-opus: ^1.0.4
-  idf: ^5.3
+  78/esp-opus: ^1.0.5
+  idf: '>=5.3'
 description: ESP32 Opus Encoder C++ wrapper
 files:
   exclude:
@@ -8,4 +8,4 @@ files:
 license: MIT
 repository: https://github.com/78/esp-opus-encoder
 url: https://github.com/78/esp-opus-encoder
-version: 2.3.1
+version: 2.3.3
