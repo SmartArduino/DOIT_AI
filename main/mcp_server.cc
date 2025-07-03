@@ -16,7 +16,11 @@
 
 #define TAG "MCP"
 
+#ifdef CONFIG_IDF_TARGET_ESP32C2
+#define DEFAULT_TOOLCALL_STACK_SIZE 2048
+#else
 #define DEFAULT_TOOLCALL_STACK_SIZE 6144
+#endif
 
 McpServer::McpServer() {
 }
