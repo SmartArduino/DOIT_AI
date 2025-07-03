@@ -80,6 +80,7 @@ typedef enum
     VB6824_CMD_SEND_VOLUM = 0x0203,
     VB6824_CMD_SEND_OTA = 0x0205,
     VB6824_CMD_SEND_GET_WAKEUP_WORD = 0x0207,
+    VB6824_CMD_SEND_DEEP_SLEEP = 0x0208,
 }vb6824_cmd_t;
 typedef enum
 {
@@ -199,7 +200,7 @@ void __frame_send(vb6824_cmd_t cmd, uint8_t *data, uint16_t len){
     int16_t idx = 0;
     uint16_t send_len = len;
 
-    while (idx < len)
+    while (idx < len || len == 0)
     {
         memset(packet, 0, sizeof(packet));
         vb6824_frame_t *frame = (vb6824_frame_t *)packet;
@@ -207,8 +208,10 @@ void __frame_send(vb6824_cmd_t cmd, uint8_t *data, uint16_t len){
         frame->len = SWAP_16(send_len);
         frame->cmd = SWAP_16(cmd);
         
-        memcpy(frame->data, data + idx, (send_len>(len-idx))?(len-idx):send_len);
-        idx += send_len;
+        if(len != 0){
+            memcpy(frame->data, data + idx, (send_len>(len-idx))?(len-idx):send_len);
+            idx += send_len;
+        }
         packet_len = 6 + send_len + 1;
         uint8_t checksum = 0;
         for (size_t i = 0; i < packet_len - 1; i++) {
@@ -217,6 +220,9 @@ void __frame_send(vb6824_cmd_t cmd, uint8_t *data, uint16_t len){
         packet[packet_len - 1] = checksum;
         // ESP_LOGW(TAG, "write_bytes: %d", packet_len);
         uart_write_bytes(UART_NUM, packet, packet_len);
+        if(len == 0){
+            return;
+        } 
     }
 }
 
@@ -653,6 +659,11 @@ bool vb6824_is_support_ota(){
 #else
     return false;
 #endif
+}
+
+void vb6824_deep_sleep_start(void){
+    ESP_LOGW(TAG, "vb6824_deep_sleep_start");
+    __frame_send(VB6824_CMD_SEND_DEEP_SLEEP, NULL, 0);
 }
 
 void vb6824_init(gpio_num_t tx, gpio_num_t rx){

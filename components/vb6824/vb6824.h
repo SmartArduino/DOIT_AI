@@ -41,6 +41,8 @@ void vb6824_init(gpio_num_t tx, gpio_num_t rx);
 
 char *vb6824_get_wakeup_word();
 
+void vb6824_deep_sleep_start(void);     //Requires firmware support
+
 #ifdef __cplusplus
 }
 #endif
