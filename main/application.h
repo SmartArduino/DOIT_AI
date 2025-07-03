@@ -44,11 +44,13 @@ enum DeviceState {
     kDeviceStateSpeaking,
     kDeviceStateUpgrading,
     kDeviceStateActivating,
+    kDeviceStateAudioTesting,
     kDeviceStateFatalError
 };
 
 #define OPUS_FRAME_DURATION_MS 60
 #define MAX_AUDIO_PACKETS_IN_QUEUE (2400 / OPUS_FRAME_DURATION_MS)
+#define AUDIO_TESTING_MAX_DURATION_MS 10000
 
 class Application {
 public:
@@ -93,7 +95,6 @@ private:
     std::unique_ptr<WakeWord> wake_word_;
     std::unique_ptr<AudioProcessor> audio_processor_;
     std::unique_ptr<AudioDebugger> audio_debugger_;
-    Ota ota_;
     std::mutex mutex_;
     std::list<std::function<void()>> main_tasks_;
     std::unique_ptr<Protocol> protocol_;
@@ -103,6 +104,7 @@ private:
     ListeningMode listening_mode_ = kListeningModeAutoStop;
     AecMode aec_mode_ = kAecOff;
 
+    bool has_server_time_ = false;
     bool aborted_ = false;
     bool voice_detected_ = false;
     bool busy_decoding_audio_ = false;
@@ -116,6 +118,7 @@ private:
     std::list<AudioStreamPacket> audio_send_queue_;
     std::list<AudioStreamPacket> audio_decode_queue_;
     std::condition_variable audio_decode_cv_;
+    std::list<AudioStreamPacket> audio_testing_queue_;
 
     // 新增：用于维护音频包的timestamp队列
     std::list<uint32_t> timestamp_queue_;
@@ -141,11 +144,14 @@ private:
 #endif
     void ResetDecoder();
     void SetDecodeSampleRate(int sample_rate, int frame_duration);
-    void CheckNewVersion();
-    void ShowActivationCode();
+    void CheckNewVersion(Ota& ota);
+    void ShowActivationCode(const std::string& code, const std::string& message);
     void OnClockTimer();
     void SetListeningMode(ListeningMode mode);
     void AudioLoop();
+    void PushMuteAudio(int mute_time);
+    void EnterAudioTestingMode();
+    void ExitAudioTestingMode();
 };
 
 #endif // _APPLICATION_H_
