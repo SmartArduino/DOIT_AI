@@ -21,6 +21,11 @@
 #include <wifi_configuration_ap.h>
 #include <ssid_manager.h>
 
+#ifdef CONFIG_USE_BLUFI_NET_CONFIGURING
+#include "esp_mac.h"
+#include "blufi_wificfg.h"
+#endif
+
 static const char *TAG = "WifiBoard";
 
 WifiBoard::WifiBoard() {
@@ -37,6 +42,84 @@ std::string WifiBoard::GetBoardType() {
 }
 
 void WifiBoard::EnterWifiConfigMode() {
+#ifdef CONFIG_USE_BLUFI_NET_CONFIGURING
+auto& application = Application::GetInstance();
+    application.SetDeviceState(kDeviceStateWifiConfiguring);
+    
+    application.Alert(Lang::Strings::WIFI_CONFIG_MODE, "请使用小程序配网", "", Lang::Sounds::P3_WIFICONFIG);
+    
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    application.ReleaseDecoder();
+
+    bool is_got_ip = false;
+    esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, [](void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data){
+        bool *is_got_ip = (bool *)arg;
+        *is_got_ip = true;
+    }, &is_got_ip);
+    
+    uint8_t mac[6];
+    static char blufi_device_name[18];
+    esp_read_mac(mac, ESP_MAC_WIFI_STA);
+    snprintf(blufi_device_name, sizeof(blufi_device_name), "DTXZ_%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    
+    blufi_wificfg_cbs_t cbs = {
+        .sta_config_cb = [](const wifi_config_t *config, void *arg) {
+            ESP_LOGI(TAG, "Received sta config, ssid: %s, password: %s", config->sta.ssid, config->sta.password);
+            std::string ssid(reinterpret_cast<const char*>(config->sta.ssid));
+            std::string password(reinterpret_cast<const char*>(config->sta.password));
+            SsidManager::GetInstance().AddSsid(ssid, password);
+        },
+        .custom_data_cb = [](const uint8_t *data, size_t len, void *arg) {
+            ESP_LOGI(TAG, "Received custom data: %.*s", (int)len, data);
+            if (strncmp((char *)data, "AT+OTA=", 7) == 0) {
+                std::string url(reinterpret_cast<const char*>(data+7), len-7);
+                ESP_LOGI(TAG, "ota_url: %s", url.c_str());
+                Settings settings("wifi", true);
+                settings.SetString("ota_url", url);
+            }
+        }
+    };
+    
+    blufi_wificfg_start(true, blufi_device_name, cbs, this);
+    
+    while (!is_got_ip) {
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+    
+    Ota ota;
+    const int MAX_RETRY = 10;
+    int retry_count = 0;
+    int retry_delay = 10; // 初始重试延迟为10秒
+    while (true) {
+        if (!ota.CheckVersion()) {
+            retry_count++;
+            if (retry_count >= MAX_RETRY) {
+                ESP_LOGE(TAG, "Too many retries, exit version check");
+                ResetWifiConfiguration();
+                return;
+            }
+            
+            ESP_LOGW(TAG, "Check new version failed, retry in %d seconds (%d/%d)", retry_delay, retry_count, MAX_RETRY);
+            for (int i = 0; i < retry_delay; i++) {
+                vTaskDelay(pdMS_TO_TICKS(1000));
+            }
+            retry_delay *= 2; // 每次重试后延迟时间翻倍
+            continue;
+        }
+        
+        auto& code = ota.GetActivationCode();
+        ESP_LOGI(TAG, "Activation code: %s", code.c_str());
+        if(!code.empty()){
+            blufi_wificfg_send_custom((uint8_t *)code.c_str(), code.length());
+        }else{
+            uint8_t data[6] = {0};
+            blufi_wificfg_send_custom(data, 6);
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(200));
+        esp_restart();
+    }
+#else
     auto& application = Application::GetInstance();
     application.SetDeviceState(kDeviceStateWifiConfiguring);
 
@@ -62,6 +145,7 @@ void WifiBoard::EnterWifiConfigMode() {
         ESP_LOGI(TAG, "Free internal: %u minimal internal: %u", free_sram, min_free_sram);
         vTaskDelay(pdMS_TO_TICKS(10000));
     }
+#endif
 }
 
 void WifiBoard::StartNetwork() {

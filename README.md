@@ -11,12 +11,11 @@
 
 👉 [AI-01模组使用手册](docs/AI-01_使用手册.pdf)
 
-
-在线下载固件：https://xiaozhi.doit.am/
+👉 [在线下载固件](https://xiaozhi.doit.am/)
 
 👉 [开发板生产资料](docs/开发板生产资料AI-01-DevKit-v1.1.zip)
 
-
+👉 [四博Blufi蓝牙配网小智，全小程序操作](https://www.bilibili.com/video/BV1PUTKz8EA7?vd_source=f5bb36b692814a666a5a5d7ea3d5ecad)
 
 特色：
 
@@ -41,12 +40,20 @@
 - 支持 ESP32-C3、ESP32-S3、ESP32-P4 芯片平台
 - 通过设备端 MCP 实现设备控制（音量、灯光、电机、GPIO 等）
 - 通过云端 MCP 扩展大模型能力（智能家居控制、PC桌面操作、知识搜索、邮件收发等）
+- 支持使用小程序配网，自动添加设备码，完全兼容 xiaozhi-esp32-server
+
+## 小程序
+* ![小程序码](docs/mini_program.png)
+
 
 ## 软件部分
 * ESP-IDF需要在5.4以上，推荐版本为5.4，参考[官方指南](https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32c2/get-started/index.html)
 * 编译
     ```
-    idf.py @main/boards/doit-ai-01-kit/build.cfg build    
+    // 热点配网
+    idf.py @main/boards/doit-ai-01-kit/build.cfg build   
+    // 小程序配网
+    idf.py @main/boards/doit-ai-01-kit/build_blufi.cfg build   
     or
     idf.py set-target esp32c2
     idf.py menuconfig

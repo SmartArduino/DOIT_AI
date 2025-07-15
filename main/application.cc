@@ -1279,7 +1279,6 @@ void Application::PushMuteAudio(int mute_time) {
     }
 }
 
-#if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
 void Application::ReleaseDecoder() {
     ESP_LOGW(TAG, "Release decoder");
     while (!audio_decode_queue_.empty())
@@ -1297,6 +1296,7 @@ void Application::ReleaseDecoder() {
     ESP_LOGW(TAG, "Decoder released DONE");
 }
 
+#if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
 
 void Application::ShowOtaInfo(const std::string& code,const std::string& ip) {
     Schedule([this]() {
