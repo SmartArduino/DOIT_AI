@@ -99,8 +99,10 @@ static SemaphoreHandle_t g_rx_mux = NULL;
 #include "vb_ota.h"
 static jl_ota_event_t s_ota_evt = NULL;
 static esp_timer_handle_t start_ota_timer = NULL;
-static esp_timer_handle_t check_wakeword = NULL;
 #endif
+
+static esp_timer_handle_t check_wakeword = NULL;
+
 static uint8_t s_wait_fresh_wakeup_word = 1;
 static uint8_t s_wait_vb_hello = 1;
 static char s_wakeup_word[32] = {"你好小智"};
@@ -628,16 +630,18 @@ int vb6824_ota(const char* code, jl_ota_event_t evt_cb){
 }
 
 
+#endif
 void __check_vb_timer_cb(void *arg){
     static uint8_t times = 0;
     if (s_wait_fresh_wakeup_word)
     {
         if (times>=20)
         {
-
+#if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
             if(s_wait_vb_hello && g_voice_event_cb){
                 g_voice_event_cb(VB6824_EVT_OTA_ENTER, 1, g_voice_event_cb_arg);
             }
+#endif
             return;
         }
         times++;
@@ -645,9 +649,7 @@ void __check_vb_timer_cb(void *arg){
         __frame_send(VB6824_CMD_SEND_GET_WAKEUP_WORD, &test, 1);
         esp_timer_start_once(check_wakeword, 200*1000);
     }
-    
 }
-#endif
 
 bool vb6824_is_support_ota(){
 #if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
@@ -689,7 +691,6 @@ void vb6824_init(gpio_num_t tx, gpio_num_t rx){
     uint8_t test = 1;
     __frame_send(VB6824_CMD_SEND_GET_WAKEUP_WORD, &test, 1);
     
-#if defined(CONFIG_VB6824_OTA_SUPPORT) && CONFIG_VB6824_OTA_SUPPORT == 1
     esp_timer_create_args_t check_timer_args = {
         .callback = __check_vb_timer_cb,
         .dispatch_method = ESP_TIMER_TASK,
@@ -702,7 +703,7 @@ void vb6824_init(gpio_num_t tx, gpio_num_t rx){
     }else{
         ESP_LOGE(TAG, "send_timer is null");
     }
-#endif
+
 #ifdef CONFIG_VB6824_SEND_USE_TASK
     xTaskCreate(__send_task, "__send_task", CONFIG_VB6824_SEND_TASK_STACK_SIZE, NULL, 9, NULL);
 #else
