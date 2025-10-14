@@ -43,7 +43,7 @@
 - 支持使用小程序配网，自动添加设备码，完全兼容 xiaozhi-esp32-server
 
 ## 小程序
-* ![小程序码](docs/mini_program.png)
+* ![小程序码](docs/sibo_mini_program.png.png)
 
 
 ## 软件部分
