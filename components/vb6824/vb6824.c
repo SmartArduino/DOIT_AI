@@ -535,7 +535,9 @@ void vb6824_audio_set_output_volume(uint8_t volume){
 }
 
 void vb6824_audio_write(uint8_t *data, uint16_t len){
-    xRingbufferSend(g_tx_ringbuffer, (void *)data, len, portMAX_DELAY);
+    if(g_output_enabled){
+        xRingbufferSend(g_tx_ringbuffer, (void *)data, len, portMAX_DELAY);
+    }
 }
 
 uint16_t vb6824_audio_read(uint8_t *data, uint16_t size){
@@ -544,7 +546,7 @@ uint16_t vb6824_audio_read(uint8_t *data, uint16_t size){
     vRingbufferGetInfo(g_rx_ringbuffer, NULL, NULL, NULL, NULL, &items_waiting);
 #if (defined(CONFIG_VB6824_TYPE_OPUS_16K_20MS) || defined(CONFIG_VB6824_TYPE_OPUS_16K_20MS_PCM_16K))
     // if(items_waiting > 0){
-    while (1) {
+    while (g_input_enabled) {
         xSemaphoreTake(g_rx_mux, portMAX_DELAY);
         char *item = (char *)xRingbufferReceive(g_rx_ringbuffer, &item_size, pdMS_TO_TICKS(10));
         if (item != NULL) {
@@ -563,7 +565,7 @@ uint16_t vb6824_audio_read(uint8_t *data, uint16_t size){
     // }
 #else
     // if(items_waiting > size){
-    while (1) {
+    while (g_input_enabled) {
         xSemaphoreTake(g_rx_mux, portMAX_DELAY);
         char *item = (uint8_t *)xRingbufferReceiveUpTo(g_rx_ringbuffer, &item_size, pdMS_TO_TICKS(10), size);
         if(item_size > 0){

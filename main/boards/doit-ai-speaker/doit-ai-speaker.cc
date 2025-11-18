@@ -1,11 +1,10 @@
 #include "wifi_board.h"
-#include "audio_codecs/es8311_audio_codec.h"
+#include "audio/codecs/es8311_audio_codec.h"
 #include "display/lcd_display.h"
 #include "application.h"
 #include "button.h"
 #include "config.h"
 #include "i2c_device.h"
-#include "iot/thing_manager.h"
 #include "led/gpio_led.h"
 
 #include <driver/i2c_master.h>
@@ -55,13 +54,6 @@ private:
                 ResetWifiConfiguration();
             }
         });
-    }
-
-    // 物联网初始化，添加对 AI 可见设备
-    void InitializeIot() {
-        auto& thing_manager = iot::ThingManager::GetInstance();
-        thing_manager.AddThing(iot::CreateThing("Speaker"));
-        thing_manager.AddThing(iot::CreateThing("Screen"));
     }
 
     void InitializeSpi() {
@@ -120,7 +112,6 @@ public:
         InitializeSpi();
         InitializeLcdDisplay();
         GetBacklight()->RestoreBrightness();
-        InitializeIot();
     }
 
     virtual AudioCodec* GetAudioCodec() override {

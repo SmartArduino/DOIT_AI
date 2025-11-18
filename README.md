@@ -48,6 +48,7 @@
 
 ## 软件部分
 * ESP-IDF需要在5.4以上，推荐版本为5.4，参考[官方指南](https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32c2/get-started/index.html)
+* 如果使用board是doit-ai-c5-kit-lcd，请使用ESP-IDF5.5以上版本
 * 编译
     ```
     // 热点配网

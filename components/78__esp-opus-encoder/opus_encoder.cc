@@ -14,8 +14,8 @@ OpusEncoderWrapper::OpusEncoderWrapper(int sample_rate, int channels, int durati
 
     // Default DTX enabled
     SetDtx(true);
-    // Complexity 5 almost uses up all CPU of ESP32C3
-    SetComplexity(5);
+    // Complexity 5 almost uses up all CPU of ESP32C3 while complexity 0 uses the least
+    SetComplexity(0);
 
     frame_size_ = sample_rate / 1000 * channels * duration_ms;
 }
@@ -56,6 +56,27 @@ void OpusEncoderWrapper::Encode(std::vector<int16_t>&& pcm, std::function<void(s
 
         in_buffer_.erase(in_buffer_.begin(), in_buffer_.begin() + frame_size_);
     }
+}
+
+bool OpusEncoderWrapper::Encode(std::vector<int16_t>&& pcm, std::vector<uint8_t>& opus) {
+    if (audio_enc_ == nullptr) {
+        ESP_LOGE(TAG, "Audio encoder is not configured");
+        return false;
+    }
+
+    if (pcm.size() != frame_size_) {
+        ESP_LOGE(TAG, "Audio data size is not equal to frame size, size: %u, frame size: %u", pcm.size(), frame_size_);
+        return false;
+    }
+
+    uint8_t buf[MAX_OPUS_PACKET_SIZE];
+    auto ret = opus_encode(audio_enc_, pcm.data(), frame_size_, buf, MAX_OPUS_PACKET_SIZE);
+    if (ret < 0) {
+        ESP_LOGE(TAG, "Failed to encode audio, error code: %ld", ret);
+        return false;
+    }
+    opus.assign(buf, buf + ret);
+    return true;
 }
 
 void OpusEncoderWrapper::ResetState() {

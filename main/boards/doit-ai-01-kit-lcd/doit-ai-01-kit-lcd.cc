@@ -1,11 +1,10 @@
 
 #include "wifi_board.h"
-#include "audio_codecs/vb6824_audio_codec.h"
+#include "audio/codecs/vb6824_audio_codec.h"
 #include "display/lcd_display.h"
 #include "application.h"
 #include "button.h"
 #include "config.h"
-#include "iot/thing_manager.h"
 
 #include <wifi_station.h>
 #include <esp_log.h>
@@ -52,12 +51,6 @@ private:
             }
             audio_codec.OtaStart(0);
         });
-    }
-    // 物联网初始化，添加对 AI 可见设备
-    void InitializeIot() {
-        auto& thing_manager = iot::ThingManager::GetInstance();
-        thing_manager.AddThing(iot::CreateThing("Speaker"));
-        thing_manager.AddThing(iot::CreateThing("Screen"));
     }
 
     void InitializeSpi() {
@@ -116,7 +109,6 @@ private:
 public:
     CustomBoard() : boot_button_(BOOT_BUTTON_GPIO), audio_codec(CODEC_TX_GPIO, CODEC_RX_GPIO){          
         InitializeButtons();
-        InitializeIot();
         InitializeSpi();
         InitializeLcdDisplay();
         GetBacklight()->RestoreBrightness();

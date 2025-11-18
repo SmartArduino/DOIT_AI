@@ -27,6 +27,7 @@ public:
 
     void SetDtx(bool enable);
     void SetComplexity(int complexity);
+    bool Encode(std::vector<int16_t>&& pcm, std::vector<uint8_t>& opus);
     void Encode(std::vector<int16_t>&& pcm, std::function<void(std::vector<uint8_t>&& opus)> handler);
     bool IsBufferEmpty() const { return in_buffer_.empty(); }
     void ResetState();

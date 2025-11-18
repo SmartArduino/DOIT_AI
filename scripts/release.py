@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import zipfile
+import argparse
 
 # 切换到项目根目录
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -64,10 +65,17 @@ def get_all_board_types():
                     board_configs[config_name] = board_type
     return board_configs
 
+<<<<<<< HEAD
 def release(board_type, board_config):
     config_path = f"main/boards/{board_type}/config.json"
     if not os.path.exists(config_path):
         print(f"跳过 {board_type} 因为 config.json 不存在")
+=======
+def release(board_type, board_config, config_filename="config.json"):
+    config_path = f"main/boards/{board_type}/{config_filename}"
+    if not os.path.exists(config_path):
+        print(f"跳过 {board_type} 因为 {config_filename} 不存在")
+>>>>>>> hogc/DOIT_AI_C5
         return
 
     # Print Project Version
@@ -119,6 +127,7 @@ def release(board_type, board_config):
         print("-" * 80)
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     if len(sys.argv) > 1:
         board_configs = get_all_board_types()
         found = False
@@ -128,6 +137,22 @@ if __name__ == "__main__":
                 found = True
         if not found:
             print(f"未找到板子类型: {sys.argv[1]}")
+=======
+    parser = argparse.ArgumentParser()
+    parser.add_argument("board", nargs="?", default=None, help="板子类型或 all")
+    parser.add_argument("-c", "--config", default="config.json", help="指定 config 文件名，默认 config.json")
+    args = parser.parse_args()
+
+    if args.board:
+        board_configs = get_all_board_types()
+        found = False
+        for board_config, board_type in board_configs.items():
+            if args.board == 'all' or board_type == args.board:
+                release(board_type, board_config, config_filename=args.config)
+                found = True
+        if not found:
+            print(f"未找到板子类型: {args.board}")
+>>>>>>> hogc/DOIT_AI_C5
             print("可用的板子类型:")
             for board_type in board_configs.values():
                 print(f"  {board_type}")

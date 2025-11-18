@@ -1,10 +1,9 @@
 
 #include "wifi_board.h"
-#include "audio_codecs/vb6824_audio_codec.h"
+#include "audio/codecs/vb6824_audio_codec.h"
 #include "application.h"
 #include "button.h"
 #include "config.h"
-#include "iot/thing_manager.h"
 
 #include <wifi_station.h>
 #include <esp_log.h>
@@ -48,17 +47,9 @@ private:
         });
     }
 
-    // 物联网初始化，添加对 AI 可见设备
-    void InitializeIot() {
-        auto& thing_manager = iot::ThingManager::GetInstance();
-        thing_manager.AddThing(iot::CreateThing("Speaker"));
-    }
-
-
 public:
     CustomBoard() : boot_button_(BOOT_BUTTON_GPIO,false,3000), audio_codec(CODEC_TX_GPIO, CODEC_RX_GPIO){          
         InitializeButtons();
-        InitializeIot();
         audio_codec.OnWakeUp([this](const std::string& command) {
             if (command == std::string(vb6824_get_wakeup_word())){
                 if(Application::GetInstance().GetDeviceState() != kDeviceStateListening){
