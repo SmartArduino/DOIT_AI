@@ -80,10 +80,8 @@ private:
       if (count >= 3 && GetNetworkType() == NetworkType::WIFI)
       {
         auto& app = Application::GetInstance();
-        if (app.GetDeviceState() == kDeviceStateStarting && !WifiStation::GetInstance().IsConnected()) {
           auto& wifi_board = static_cast<WifiBoard&>(GetCurrentBoard());
           wifi_board.ResetWifiConfiguration();
-        }
       } 
     });
   }
