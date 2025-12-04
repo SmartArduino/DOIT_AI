@@ -444,7 +444,7 @@ static void example_event_callback(esp_blufi_cb_event_t event, esp_blufi_cb_para
         BLUFI_INFO("Recv SOFTAP CHANNEL %d\n", ap_config.ap.channel);
         break;
     case ESP_BLUFI_EVENT_GET_WIFI_LIST:{
-        
+         BLUFI_INFO("GET_WIFI_LIST");
         esp_wifi_set_mode(WIFI_MODE_STA);
         esp_wifi_disconnect();
 

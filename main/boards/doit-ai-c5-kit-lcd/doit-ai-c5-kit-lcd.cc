@@ -52,7 +52,11 @@ private:
           wifi_board.ResetWifiConfiguration();
         }
       }
-      app.ToggleChatState(); });
+      // app.ToggleChatState(); 
+      if(Application::GetInstance().GetDeviceState() != kDeviceStateListening){
+            Application::GetInstance().WakeWordInvoke("你好小智");
+        }
+    });
 
     boot_button_.OnDoubleClick([this]()
     {
