@@ -61,6 +61,11 @@
     // Xiaozhi Assistant ---> Board Type ---> Doit-AI-01-Kit    
     idf.py build
     ```
+    下载项目: git clone 项目地址
+
+    编译指令：idf.py @main/boards/doit-ai-c5-kit-lcd/build.cfg build 
+
+    AEC配置：使用idf.py menuconfig ,然后选择xiaozhi Assistant->enable device-side AEC,打开就可以实现直接打断。
 
 ### 下载说明
 可使用[配套的下载器](https://item.taobao.com/item.htm?id=903237380382&skuId=5947883431059&spm=a1z10.5-c-s.w4002-21590874298.11.126342baEAq94S)或普通的TTL(USB转串口)
